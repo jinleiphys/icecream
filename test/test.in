@@ -14,15 +14,5 @@ NAMELIST
 ! zp(t) : charge number of projectile(target)
 ! jp(t) : spin of projectile(target)
 
-&POTENTIAL  ptype=1 a1=0 a2=1 rc=1.3
-            uv=77.3 av=0.77 rv=1.15 
-            uw=6.1  aw=0.47 rw=1.33
-     
-            /
-
-! ptype=1 : Wood-Saxon
-! ptype=2 : Gaussian 
-! ptype=3 : Malfliet-Tjon
 
 
-       wd=8.4  awd=0.77 rwd=1.37 
