@@ -64,7 +64,10 @@ C      use lagrange_mesh_single_channel
        complex*16,dimension(:,:),allocatable :: Upot ! potential used for calculations
        complex*16, dimension(0:lmax) ::  smat      
        integer :: ipot
-       character*10,dimension(3) :: potname 
+       character*10,dimension(4) :: potname 
+       character*99 :: name_pot
+       character*10 :: num
+       integer :: ir 
        
 
        if(.not. allocated(wf)) then 
@@ -82,6 +85,7 @@ C      use lagrange_mesh_single_channel
        potname(1)="KD02"
        potname(2)="CH89"
        potname(3)="BG69"
+       potname(4)="WSS"
        
        
        ! test lagrange mesh
@@ -110,9 +114,9 @@ C      call T_and_Bloch(mu)
     
         
         
-       do  ipot=1, 3 
+       do  ipot=1, 4 
        
-       write(*,*) "calculating Elab=",elab(ie),"with",trim(potname(ipot))
+       write(*,*) "calculating Elab=",elab(ie),"with ",trim(potname(ipot))
        ! solve the differential equations for each channel
        do nch=1,alpha2b%nchmax
 
@@ -124,6 +128,18 @@ C      call T_and_Bloch(mu)
           ! obtain the potential
           call potr(zp*zt,ls,ie,ipot)
           Upot(:,nch)=v
+          
+          if(nch==1) then
+          write(num,'(f7.2)')  elab(ie) 
+          write(name_pot, '(A,"+",A,"_",A,"_pot_",A,"MeV.dat")') trim(namep),trim(namet),trim(potname(ipot)),trim(adjustl(num))
+          open (11,file=trim(name_pot),status='replace')
+          do ir=1, irmatch
+          write(11,*)ir*hcm, real(Upot(ir,nch)), aimag(Upot(ir,nch))
+          end do 
+          
+          end if 
+          
+          
           ! solve the differential equation
           r0=2*l
           call sch_enhanced_numerov(r0,mu,ecm,Upot(0:irmatch,nch),l,wf(:,nch))
@@ -189,8 +205,6 @@ c-----------------------------------------------------------------------
       
 
 
-       write(*,*) "ipot=",ipot
-
       
       select case(ipot)
         case(1)
@@ -199,6 +213,8 @@ c-----------------------------------------------------------------------
          write(99,*)"&CH89"
         case(3)    
          write(99,*) "&Bechetti-Greenlees"   
+        case(4)
+        write(99,*) "&Watson"
       end select  
       do ith=1, nth 
          theta=thmin+ thinc*(ith-1)
@@ -246,7 +262,7 @@ c--------------------------------------------------------------------------
       character*99 :: name_dsdw, sigmaR, sigmaEL
       integer :: ipot , ie 
       
-      do ipot=1, 3
+      do ipot=1, 4
     
     
       select case(ipot)
@@ -259,6 +275,10 @@ c--------------------------------------------------------------------------
       case(3)
       write(sigmaR,'(A,"+",A,"_sigmaR_BG69.dat")')trim(namep),trim(namet)
       write(sigmaEl,'(A,"+",A,"_sigmaEL_BG69.dat")')trim(namep),trim(namet)
+      case(4)
+      write(sigmaR,'(A,"+",A,"_sigmaR_WSS.dat")')trim(namep),trim(namet)
+      write(sigmaEl,'(A,"+",A,"_sigmaEL_WSS.dat")')trim(namep),trim(namet)
+      
       end select 
 
        open (101,file=sigmaR)

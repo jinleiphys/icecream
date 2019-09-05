@@ -30,6 +30,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
        use ch89mod 
        use kd02mod 
        use bgPNmod
+       use wssmod
        use systems
        implicit none
        real*8 :: a13,r !a1^0.333333+a2^0.333333
@@ -73,7 +74,9 @@ c-----------------------------------------------------------------------
 !----------------Bechetti-Greenlees-------------------------------------------- 
        case(3)
        call bgPN(massp,zp,masst,zt,elab(ie),uv,rv,av,uw,rw,aw,vd,rvd,avd,wd,rwd,awd,rc)
-       
+!----------------WSS-------------------------------------------- 
+       case(4)
+       call watson(massp,zp,masst,zt,elab(ie),uv,rv,av,uw,rw,aw,vd,rvd,avd,wd,rwd,awd,rc)
        
        end select 
        

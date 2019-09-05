@@ -1,4 +1,4 @@
-OBJ= precision.o  constants.o systems.o channels.o mesh.o bgPN.o ch89.o kd02.o \
+OBJ= precision.o  constants.o systems.o channels.o mesh.o bgPN.o ch89.o kd02.o watson.o \
  pot.o input.o  coul90.o gauss.o interpolation.o  lagrange_mesh.o scattwf.o scattering.o 
 
 
