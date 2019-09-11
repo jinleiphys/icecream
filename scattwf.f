@@ -81,6 +81,8 @@ C      use lagrange_mesh_single_channel
        k=sqrt(2.*mu*ecm/(hbarc**2)) ! wavenumber (fm^{-1})
        rho=(irmatch-2)*hcm*k        ! used for coul90
        eta=zp*zt*e2*mu/hbarc/hbarc/k ! Sommerfeld parameter
+       
+       
 
        potname(1)="KD02"
        potname(2)="CH89"
@@ -209,13 +211,19 @@ c-----------------------------------------------------------------------
       select case(ipot)
         case(1)
          write(99,*)"&KD02"
+         write(199,*)"&KD02"
         case(2)
          write(99,*)"&CH89"
+         write(199,*)"&CH89"
         case(3)    
          write(99,*) "&Bechetti-Greenlees"   
+         write(199,*) "&Bechetti-Greenlees"  
         case(4)
         write(99,*) "&Watson"
+        write(199,*) "&Watson"
       end select  
+      
+      
       do ith=1, nth 
          theta=thmin+ thinc*(ith-1)
          theta_radian= theta* pi / 180.
@@ -229,7 +237,7 @@ c-----------------------------------------------------------------------
          f= fc+fn
          dsdw= abs(f) ** 2 * 10 
          dsdw_Ruth = eta**2 * 10 / (4 * k**2 * sin2theta**2 ) 
-
+          write(199,*) theta, dsdw, dsdw_Ruth
          if(abs(eta) > 1e-6) dsdw = dsdw/dsdw_Ruth 
          
          write(99,*) theta, dsdw

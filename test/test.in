@@ -1,5 +1,5 @@
 NAMELIST
-&GLOBAL      hcm=0.05 rmatch=40  lmax=35  elab=10,20,30  /
+&GLOBAL      hcm=0.05 rmatch=40  lmax=20  elab=5  20 /
 
 ! hcm: step for solving the differential equations using Numerov
 ! rmatch : matching radius 
