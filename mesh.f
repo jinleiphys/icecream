@@ -6,4 +6,5 @@ c      wave functions calculated at intervals of HCM up to abs(RMATCH).
       integer :: nr 
       integer :: nth 
       real*8 :: thmin, thmax,thinc
+      real*8,dimension(:),allocatable :: rr,rrw
       end module

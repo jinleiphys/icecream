@@ -1,85 +1,88 @@
-C>     this version of gauleg is embedded in a module
-C>     and includes the standard transformation trns
-C>     tol is set to 1E-12, which should work with
-C>     REAL = double precision
-
+C>     this version of gauleg is embedded in a module 
+C>     and includes the standard transformation trns 
+C>     tol is set to 1E-12, which should work with 
+C>     REAL = double precision 
+C>     Version vom 21.08.2008 (AN)
 
       MODULE gauss
        USE precision
        PRIVATE
 
-       PUBLIC gauleg,trns,print_gauss,trnsmin,gauleg_4_parts,gauleg_6_parts
+       PUBLIC gauleg,trns,impulse,equidist,chebyshev,trnsmin,expdistr,simpson
 
-       CONTAINS
+       CONTAINS 
+       
+!    this routine only print out info on the version number 
+       
+       
+       
+       ! subroutine to generate the grid points and width for Simpson integration
+       subroutine simpson(nnu,xival,rr,rw)
+       implicit none 
+       integer :: nxmx,nnu
+       real*8 :: xival
+       real*8,dimension(1:nnu) :: rr,rw
+       real*8,dimension(1:nnu+1) :: sxx,wxx
+       real*8 :: dx, d43,d23
+       integer :: nxmx1, nxmx2,i 
+       
+        nxmx=nnu+1
+        dx=xival/float(nxmx-1)
+ 
+        d43=4.d0/3.d0
+        d23=2.d0/3.d0
+   
+        wxx(1)=dx/3.d0
+        wxx(nxmx)=dx/3.d0
+        sxx(1)=0.d0
+        sxx(nxmx)=float(nxmx-1)*dx
 
-       ! divided the whole interval into 4 parts
-       subroutine gauleg_4_parts(N4,x1,x2,X,W)
-       implicit none
-       INTEGER N, N4
-       REAL(dpreal) x1,x2,X(N4),W(N4)
-       real(dpreal) x_step
+ 
+        nxmx1=nxmx-1
+        nxmx2=nxmx-2
+ 
+        do 50 i=2,nxmx1,2
+        sxx(i)=float(i-1)*dx
+  50    wxx(i)=d43*dx
+ 
+        do 55 i=3,nxmx2,2
+        sxx(i)=float(i-1)*dx
+  55    wxx(i)=d23*dx
+  
+  
+        do i=1,nnu
+          rr(i)=sxx(i+1)
+          rw(i)=wxx(i+1)
+        end do 
+       end subroutine  
 
-       N=N4/4
-       x_step=(x2-x1)/4.0_dpreal
-
-       call gauleg(N,x1,x1+x_step,X(1:N),W(1:N))
-       call gauleg(N,x1+x_step,x1+2.*x_step,X(N+1:2*N),W(N+1:2*N))
-       call gauleg(N,x1+2.*x_step,x1+3.*x_step,X(2*N+1:3*N),W(2*N+1:3*N))
-       call gauleg(N,x1+3.*x_step,x2,X(3*N+1:N4),W(3*N+1:N4))
-
-       end subroutine
-
-
-       ! divided the whole interval into 6 parts
-       subroutine gauleg_6_parts(N6,x1,x2,X,W)
-       implicit none
-       INTEGER N, N6
-       REAL(dpreal) x1,x2,X(N6),W(N6)
-       real(dpreal) x_step
-
-       N=N6/6
-       x_step=(x2-x1)/6.0_dpreal
-
-       call gauleg(N,x1,x1+x_step,X(1:N),W(1:N))
-       call gauleg(N,x1+1.*x_step,x1+2.*x_step,X(1*N+1:2*N),W(1*N+1:2*N))
-       call gauleg(N,x1+2.*x_step,x1+3.*x_step,X(2*N+1:3*N),W(2*N+1:3*N))
-       call gauleg(N,x1+3.*x_step,x1+4.*x_step,X(3*N+1:4*N),W(3*N+1:4*N))
-       call gauleg(N,x1+4.*x_step,x1+5.*x_step,X(4*N+1:5*N),W(4*N+1:5*N))
-       call gauleg(N,x1+5.*x_step,x2,X(5*N+1:N6),W(5*N+1:N6))
-
-       end subroutine
-
-
-
-!    this routine only print out info on the version number
-
-
-C>     this subroutine calculates standard gauss Legendre points
-C>     between x1 and x2 (usually -1.0_dpreal and  1.0_dpreal)
-C>     N is the number of mesh points required.
-C>     The grid and the weights are stored in the arrays X and W
-C>     @param[in] x1 lower boundary
-C>     @param[in] x2 upper boundary
-C>     @param[in] N number of grid points
-C>     @param[out] X grid points
+        
+C>     this subroutine calculates standard gauss Legendre points 
+C>     between x1 and x2 (usually -1.0_dpreal and  1.0_dpreal) 
+C>     N is the number of mesh points required. 
+C>     The grid and the weights are stored in the arrays X and W 
+C>     @param[in] x1 lower boundary 
+C>     @param[in] x2 upper boundary 
+C>     @param[in] N number of grid points 
+C>     @param[out] X grid points 
 C>     @param[out] W integration weights
        SUBROUTINE gauleg(N,x1,x2,X,W)
         IMPLICIT NONE
-        INTEGER N
+        INTEGER N        
         REAL(dpreal) x1,x2,X(N),W(N)
         REAL(dpreal) z1,z,xm,xl,pp,p3,p2,p1,pi,tol
         INTEGER m,i,j
-
+        
         pi=acos(-1.0)
         tol=1.E-12
-
+        
         m=(n+1)/2
         xm=0.5*(x2+x1)
         xl=0.5*(x2-x1)
-
+        
         DO 10 i=1,m
          z=cos(pi*(i-0.25)/(N+0.5))
-
+         
  20      CONTINUE
          p1=1.0E0
          p2=0.0E0
@@ -92,7 +95,7 @@ C>     @param[out] W integration weights
          z1=z
          z=z1-p1/pp
          IF( abs(z1-z) .GT. tol) GOTO 20 ! Scheifenende
-
+         
          X(i) = xm - xl*z
          X(n+1-i) = xm + xl*z
          W(i) = 2.E0*xl/((1.0-z*z)*pp*pp)
@@ -101,23 +104,52 @@ C>     @param[out] W integration weights
        END SUBROUTINE gauleg
 
 
+C     Impulsroutine von Dirk Hueber
+C     for compatibility with V3NF codes 
+C     no integration weights will be returned 
 
+      SUBROUTINE IMPULSE(NN,PP,P,W,PBAR)
+C
+C     Diese Subroutine berechnet die Impulspunkte 
+C
+      PARAMETER (NMAX=30)
+      INTEGER NN(4)
+      REAL(dpreal) PP(5),P(NMAX),W(NMAX)
+      REAL(dpreal) PBAR
 
+      PBAR=PP(5)
+      NUM=0
+      DO 10 I=1,4
+       IF (NN(I).EQ.0) GOTO 10
+       AL=(PP(I+1)-PP(I))/NN(I)
+       DO 20 J=1,NN(I)
+        IF (I.EQ.2) THEN
+         P(J+NUM)=PP(I)+(PP(I+1)-PP(I))*(REAL(J,dpreal)
+     $         /REAL(NN(I),dpreal))**2
+        ELSE
+         P(J+NUM)=PP(I)+J*AL
+        ENDIF
+        W(J+NUM)=0.
+20     CONTINUE
+       NUM=NUM+NN(I)
+10    CONTINUE
 
-C     the subsroutine trns uses gauleg to obtain Gauss-Legendre grid points
-C     and performs a hyperbolic transformation on the points and weights
+      END SUBROUTINE
+
+C     the subsroutine trns uses gauleg to obtain Gauss-Legendre grid points 
+C     and performs a hyperbolic transformation on the points and weights 
 C     resulting new points and weights that are more even spread in the intervals
-C     The grid has NP1/2 points between 0 and P1, NP1/2 points between P1 and P2
-C     and NP2 points between P2 and P3
+C     The grid has NP1/2 points between 0 and P1, NP1/2 points between P1 and P2 
+C     and NP2 points between P2 and P3 
 C     The complete grid runs from 0 to P3 and has NP=NP1+NP2 grid points
 C     It is your responsibility to make sure that NP=NP1+NP2
-C     P1,P2,P3 defines the intervals
-C     NP1,NP2,NP=NP1+NP2 the number of mesh points.
-C     grid and weights are stored in XP and AP on exit
+C     P1,P2,P3 defines the intervals 
+C     NP1,NP2,NP=NP1+NP2 the number of mesh points. 
+C     grid and weights are stored in XP and AP on exit 
 
 
        SUBROUTINE TRNS(NP1,NP2,NP,P1,P2,P3,XP,AP)
-       IMPLICIT NONE
+       IMPLICIT NONE  
 C     ===============
 C
 C     TRNS BELEGT DIE FELDER XP UND AP MIT TRANSFORMIERTEN
@@ -148,7 +180,7 @@ C
        INTEGER I
 
        CALL gauleg(NP1,-eins,eins,XP1,AP1)
-
+       
        DO 1 I=1,NP1
         X=XP1(I)
         A=AP1(I)
@@ -181,8 +213,8 @@ C
 C
        RETURN
       END SUBROUTINE trns
-
-C  same as TRNS except that the first interval starts not at zero but at PMIN
+      
+C  same as TRNS except that the first interval starts not at zero but at PMIN       
 
       SUBROUTINE TRNSMIN(NP1,NP2,NP,PMIN,P1,P2,P3,XP,AP)
        IMPLICIT NONE
@@ -192,7 +224,7 @@ C  same as TRNS except that the first interval starts not at zero but at PMIN
        REAL(dpreal),PARAMETER :: eins=1.0_dpreal
        INTEGER NP1,NP2,NP,I
        REAL(dpreal) AA,BB,CC,X,A,XX1,XX2,DELPH
-
+       
 C     =============
 C
 C     TRNS BELEGT DIE FELDER XP UND AP MIT TRANSFORMIERTEN
@@ -251,9 +283,197 @@ C
       RETURN
       END SUBROUTINE TRNSMIN
 
+!! open formular of Numerical Recipes in FORTRAN 2nd ed. 
+!!  based on equation 4.1.18
+ 
+      SUBROUTINE equidist(NP1,NP2,NP,P1,P2,P3,XP,AP)
+       IMPLICIT NONE
+
+       INTEGER NP1,NP2,NP 
+       REAL(dpreal) XP(NP),AP(NP),P1,P2,P3
+
+       INTEGER ip
+       REAL(dpreal) delta1,delta1_24th
+       REAL(dpreal) delta2,delta2_24th
 
 
+       IF(NP1+NP2.NE.NP) STOP 'NP not consistent with NP1,NP2'
+
+       IF(NP1.GE.6) THEN  
+         
+         delta1=(P2-P1)/(NP1+1)
+         delta1_24th=delta1/24.0
+         
+
+         XP(1)=P1+delta1
+         XP(2)=P1+2.0*delta1
+         XP(3)=P1+3.0*delta1
+         AP(1)=delta1_24th*55.0
+         AP(2)=-delta1_24th*4.0
+         AP(3)=delta1_24th*33.0
 
 
+         XP(NP1-2)=P1+(NP1-2)*delta1
+         XP(NP1-1)=P1+(NP1-1)*delta1
+         XP(NP1)=P1+NP1*delta1
+         AP(NP1-2)=delta1_24th*33.0
+         AP(NP1-1)=-delta1_24th*4.0
+         AP(NP1)=delta1_24th*55.0
+
+
+         DO ip=4,NP1-3
+          XP(ip)=P1+ip*delta1
+          AP(ip)=delta1
+         END DO
+
+       ELSE
+         IF(NP1.EQ.0) THEN 
+           CONTINUE
+         ELSE IF(NP1.EQ.1) THEN
+           AP(1)=P2-P1
+           XP(1)=P1
+         ELSE
+           STOP 'NP1 LE 6 not implemented'
+         END IF
+       END IF
+      
+       IF(NP2.GE.6) THEN
+
+         delta2=(P3-P2)/(NP2+1)
+         delta2_24th=delta2/24.0
+         
+
+         XP(NP1+1)=P2+delta2
+         XP(NP1+2)=P2+2.0*delta2
+         XP(NP1+3)=P2+3.0*delta2
+         AP(NP1+1)=delta2_24th*55.0
+         AP(NP1+2)=-delta2_24th*4.0
+         AP(NP1+3)=delta2_24th*33.0
+
+
+         XP(NP1+NP2-2)=P2+(NP2-2)*delta2
+         XP(NP1+NP2-1)=P2+(NP2-1)*delta2
+         XP(NP1+NP2)=P2+NP2*delta2
+         AP(NP1+NP2-2)=delta2_24th*33.0
+         AP(NP1+NP2-1)=-delta2_24th*4.0
+         AP(NP1+NP2)=delta2_24th*55.0
+
+
+         DO ip=4,NP2-3
+          XP(NP1+ip)=P2+ip*delta2
+          AP(NP1+ip)=delta2
+         END DO
+
+       ELSE
+         IF(NP2.EQ.0) THEN 
+           CONTINUE
+         ELSE IF(NP2.EQ.1) THEN
+           AP(NP1+1)=P3-P2
+           XP(NP1+1)=P2
+         ELSE
+           STOP 'NP2 LE 6 not implemented'
+         END IF
+       END IF
+
+
+      END SUBROUTINE
+
+      SUBROUTINE chebyshev(NP,xa,xb,XP,AP,gp,gpp)
+       IMPLICIT NONE
+       INTEGER NP
+       REAL(dpreal) xa,xb,XP(NP),AP(NP),gp(NP,NP),gpp(NP,NP)
+       INTEGER ip,ik,ij
+       REAL(dpreal) ccoef(NP+1,NP),pikonst
+       REAL(dpreal) sum,gfunc,gprime,x
+
+       INTEGER k,i
+
+
+       gfunc(x)=(1.0+x)/(1.0/xa-(1.0/xa-2.0/xb)*x)
+
+       gprime(x)=((1.0/xa-(1.0/xa-2.0/xb)*x)
+     X                +(1.0/xa-2.0/xb)*(1.0+x))
+     X                 /(1.0/xa-(1.0/xa-2.0/xb)*x)**2
+
+
+       AP(1:NP)=0.0
+       pikonst=ACOS(-1.0)
+
+       DO k=1,NP
+        XP(NP+1-k)=gfunc(cos(pikonst*(k-0.5)/NP))
+
+        DO i=2,NP-1,2
+         AP(NP+1-k)=AP(NP+1-k)
+     X        +2.0/(NP*(i-1))
+     X         *(cos(pikonst*(i-2)*(k-0.5)/NP)
+     X                 -cos(pikonst*i*(k-0.5)/NP))
+     X            *gprime(cos(pikonst*(k-0.5)/NP))
+        END DO
+       END DO
+
+       sum=0.0
+       DO k=1,NP
+        sum=sum+AP(k)
+       END DO
+
+       ccoef(1:NP+1,1:NP)=0.0
+
+       DO ik=1,NP
+
+        DO ij=NP,2,-1
+         ccoef(ij-1,ik)=ccoef(ij+1,ik)
+     X      +4.0*(ij-1.0)/NP*cos(pikonst*(ij-1.0)*(ik-0.5)/NP)
+        END DO
+       END DO
+
+       
+       DO ik=1,NP
+        DO ip=1,NP
+         gp(NP+1-ip,NP+1-ik)=-0.5*ccoef(1,ik)
+         DO ij=1,NP-1
+          gp(NP+1-ip,NP+1-ik)=gp(NP+1-ip,NP+1-ik)
+     X         +ccoef(ij,ik)*cos(pikonst*(ij-1.0)*(ip-0.5)/NP)
+         END DO
+        END DO
+       END DO
+       
+
+       DO ik=1,NP
+        DO ip=1,NP
+         gp(NP+1-ip,NP+1-ik)=gp(NP+1-ip,NP+1-ik)
+     X      /gprime(cos(pikonst*(ip-0.5)/NP))
+        END DO
+       END DO
+
+       DO ik=1,NP
+        DO ip=1,NP
+         gpp(ip,ik)=0.0
+         DO ij=1,NP
+          gpp(ip,ik)=gpp(ip,ik)+gp(ip,ij)*gp(ij,ik)
+         END DO         
+        END DO
+       END DO       
+
+       
+      END SUBROUTINE
+      
+      SUBROUTINE expdistr(NP,P1,P2,XP,AP)
+       IMPLICIT NONE
+       INTEGER NP
+       REAL(dpreal) P1,P2,XP(NP),AP(NP)
+       REAL(dpreal) a,alpha,GP(NP),GW(NP)
+       INTEGER ip
+
+       CALL gauleg(NP,-1.0_dpreal,1.0_dpreal,GP,GW)
+       
+       alpha=0.5*log(P2/P1)
+       a=P1
+
+       DO ip=1,NP
+        XP(ip)=a*exp(alpha*(GP(ip)+1.0))
+        AP(ip)=alpha*XP(ip)*GW(ip)
+       END DO
+
+      END SUBROUTINE
 
       END MODULE gauss

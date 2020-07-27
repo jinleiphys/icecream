@@ -18,6 +18,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use channels
       use mesh
       use pot
+      use gauss
       use precision
       implicit none
       integer :: ie 
@@ -49,6 +50,9 @@ c /global/
        rmax=rmatch
        nth = nint( (thmax-thmin) / thinc + 1)
        ne=0 
+       allocate(rr(irmatch),rrw(irmatch))
+       call simpson(irmatch,rmax,rr,rrw)
+       
        do ie=1,99 
         if(elab(ie)>0) ne=ne+1
        end do 

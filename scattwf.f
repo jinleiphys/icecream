@@ -4,6 +4,7 @@
       real*8,dimension(:),allocatable :: nfc,ngc,nfcp,ngcp ! used for coul90
       real*8,dimension(:,:),allocatable ::  pl
       real*8,dimension(:,:), allocatable :: sigma_el_store, sigma_R_store 
+      real*8, dimension(:,:), allocatable :: volumeintegral_store
 
 
       contains
@@ -16,7 +17,7 @@ c     sp : spin of projectile
 c     st : spin of target 
 c     l  : angular momentum between projectile and target
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-       use mesh,only:irmatch,hcm  
+       use mesh,only:irmatch,hcm, rr, rrw
        !  matching radius irmatch*hcm 
        !  irmatch: index
        !  hcm : step (unite in fm)
@@ -137,6 +138,7 @@ C      call T_and_Bloch(mu)
           open (11,file=trim(name_pot),status='replace')
           do ir=1, irmatch
           write(11,*)ir*hcm, real(Upot(ir,nch)), aimag(Upot(ir,nch))
+          volumeintegral_store(ie,ipot) = volumeintegral_store(ie,ipot) + rr(ir)**2 * aimag(-Upot(ir,nch)) * rrw(ir)
           end do 
           
           end if 
@@ -296,7 +298,7 @@ c--------------------------------------------------------------------------
        do ie=1, ne 
        
        
-      write(101,*) elab(ie), sigma_R_store(ie,ipot)
+      write(101,*) elab(ie), sigma_R_store(ie,ipot),volumeintegral_store(ie, ipot)
       write(102,*) elab(ie), sigma_el_store(ie,ipot)
       
       end do 

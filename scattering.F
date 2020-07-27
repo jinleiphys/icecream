@@ -2,6 +2,7 @@
       use input
       use channels 
       use scattwf
+      use precision
       implicit none 
       integer :: ie 
       ! reading in the parameters 
@@ -15,7 +16,8 @@
       
       ! solve the scattering problem 
       call plcos()
-      allocate(sigma_el_store(ne,4), sigma_R_store(ne,4) )
+      allocate(sigma_el_store(ne,4), sigma_R_store(ne,4), volumeintegral_store(ne,4) )
+      volumeintegral_store=0.0_dpreal
       do ie=1, ne 
       call scatt2b(ie)
       
