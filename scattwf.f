@@ -65,7 +65,7 @@ C      use lagrange_mesh_single_channel
        complex*16,dimension(:,:),allocatable :: Upot ! potential used for calculations
        complex*16, dimension(0:lmax) ::  smat      
        integer :: ipot
-       character*10,dimension(4) :: potname 
+       character*10,dimension(5) :: potname 
        character*99 :: name_pot
        character*10 :: num
        integer :: ir 
@@ -89,6 +89,7 @@ C      use lagrange_mesh_single_channel
        potname(2)="CH89"
        potname(3)="BG69"
        potname(4)="WSS"
+       potname(5)="WLH"
        
        
        ! test lagrange mesh
@@ -117,7 +118,7 @@ C      call T_and_Bloch(mu)
     
         
         
-       do  ipot=1, 4 
+       do  ipot=1, 5
        
        write(*,*) "calculating Elab=",elab(ie),"with ",trim(potname(ipot))
        ! solve the differential equations for each channel
@@ -223,6 +224,9 @@ c-----------------------------------------------------------------------
         case(4)
         write(99,*) "&Watson"
         write(199,*) "&Watson"
+        case(5)
+        write(99,*) "&WLH"
+        write(199,*) "&WLH"
       end select  
       
       
@@ -272,7 +276,7 @@ c--------------------------------------------------------------------------
       character*99 :: name_dsdw, sigmaR, sigmaEL
       integer :: ipot , ie 
       
-      do ipot=1, 4
+      do ipot=1, 5
     
     
       select case(ipot)
@@ -288,7 +292,9 @@ c--------------------------------------------------------------------------
       case(4)
       write(sigmaR,'(A,"+",A,"_sigmaR_WSS.dat")')trim(namep),trim(namet)
       write(sigmaEl,'(A,"+",A,"_sigmaEL_WSS.dat")')trim(namep),trim(namet)
-      
+      case(5)
+      write(sigmaR,'(A,"+",A,"_sigmaR_WLH.dat")')trim(namep),trim(namet)
+      write(sigmaEl,'(A,"+",A,"_sigmaEL_WLH.dat")')trim(namep),trim(namet)
       end select 
 
        open (101,file=sigmaR)

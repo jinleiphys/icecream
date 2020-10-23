@@ -31,6 +31,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
        use kd02mod 
        use bgPNmod
        use wssmod
+       use WLH_pot
        use systems
        implicit none
        real*8 :: a13,r !a1^0.333333+a2^0.333333
@@ -40,7 +41,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
        real*8 :: wsv,wsw,vcou,vlsv,vlsw,vsurv,vsurw   !real part and imaginary part
        real*8 :: z12  ! For Coulomb potential
        real*8 ::ls !l*s
-       integer :: ir, ipot, ie 
+       integer :: ir, ipot, ie , xpn
 
        vc=0.0d0;vcou=0.0d0;vls=0.0d0;vsur=0.0d0
        wsv=0.0d0;wsw=0.0d0;vcou=0.0d0;vlsv=0.0d0;vlsw=0.0d0
@@ -103,6 +104,12 @@ C      vls=cmplx(vlsv,vlsw,kind=8)
        vsurw=4*awd*dws(r,wd,rwd*a13,awd)
        vsur=cmplx(vsurv,vsurw,kind=8)
        
+       if(ipot==5) then 
+       xpn=1
+       if (zp>0.0000001) xpn=0
+       call WLHOP(xpn,elab(ie),zt,masst,r,vc,vsur)
+       
+       end if
        ! Coulomb potential
        vcou=vcoul(r,z12,rc*a13)
 
@@ -111,11 +118,6 @@ C      vls=cmplx(vlsv,vlsw,kind=8)
        end do
 
 
-       
-C      do ir=0,irmatch
-C         write(30,*) ir*hcm,real(v(ir)),aimag(v(ir))
-C      end do
-C      write(30,*) "&"
 
 
       end subroutine potr
