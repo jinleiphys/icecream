@@ -4,7 +4,7 @@
       real*8,dimension(:),allocatable :: nfc,ngc,nfcp,ngcp ! used for coul90
       real*8,dimension(:,:),allocatable ::  pl
       real*8,dimension(:,:), allocatable :: sigma_el_store, sigma_R_store 
-      real*8, dimension(:,:), allocatable :: volumeintegral_store
+      real*8, dimension(:,:), allocatable :: volumeintegral_store,volumeintegral_store_R ! R for real part 
 
 
       contains
@@ -69,6 +69,7 @@ C      use lagrange_mesh_single_channel
        character*99 :: name_pot
        character*10 :: num
        integer :: ir 
+       real*8,dimension(0:irmatch) :: vreal
        
 
        if(.not. allocated(wf)) then 
@@ -130,7 +131,7 @@ C      call T_and_Bloch(mu)
           ls=0.5_dpreal*(j*(j+1)-l*(l+1)-s*(s+1))
           
           ! obtain the potential
-          call potr(zp*zt,ls,ie,ipot)
+          call potr(zp*zt,ls,ie,ipot,vreal)
           Upot(:,nch)=v
           
           if(nch==1) then
@@ -140,6 +141,7 @@ C      call T_and_Bloch(mu)
           do ir=1, irmatch
           write(11,*)ir*hcm, real(Upot(ir,nch)), aimag(Upot(ir,nch))
           volumeintegral_store(ie,ipot) = volumeintegral_store(ie,ipot) + rr(ir)**2 * aimag(-Upot(ir,nch)) * rrw(ir)
+          volumeintegral_store_R(ie,ipot) = volumeintegral_store_R(ie,ipot) + rr(ir)**2 * (-vreal(ir)) * rrw(ir)
           end do 
           
           end if 
@@ -304,7 +306,7 @@ c--------------------------------------------------------------------------
        do ie=1, ne 
        
        
-      write(101,*) elab(ie), sigma_R_store(ie,ipot),volumeintegral_store(ie, ipot)
+      write(101,*) elab(ie), sigma_R_store(ie,ipot),volumeintegral_store_R(ie, ipot),volumeintegral_store(ie, ipot)
       write(102,*) elab(ie), sigma_el_store(ie,ipot)
       
       end do 

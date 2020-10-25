@@ -22,7 +22,7 @@ C     implicit none
 
       contains
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine potr(z12,ls,ie,ipot)
+      subroutine potr(z12,ls,ie,ipot,vreal)
 c     subroutine to calculate the potential
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
        use mesh,only:irmatch,hcm
@@ -42,10 +42,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
        real*8 :: z12  ! For Coulomb potential
        real*8 ::ls !l*s
        integer :: ir, ipot, ie , xpn
+       real*8,dimension(0:irmatch) :: vreal
 
        vc=0.0d0;vcou=0.0d0;vls=0.0d0;vsur=0.0d0
        wsv=0.0d0;wsw=0.0d0;vcou=0.0d0;vlsv=0.0d0;vlsw=0.0d0
        vsurv=0.0d0;vsurw=0.0d0
+       vreal=0.0_dpreal
 
 
       if (.not. allocated(v)) allocate(v(0:irmatch))
@@ -114,7 +116,7 @@ C      vls=cmplx(vlsv,vlsw,kind=8)
        vcou=vcoul(r,z12,rc*a13)
 
        v(ir)=vc+vcou+vls+vsur
-
+       vreal(ir)=real(v(ir))-vcou
        end do
 
 
