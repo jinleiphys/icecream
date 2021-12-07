@@ -8,7 +8,7 @@ c     parameter initialization
 c       namelist /global/ hcm,rmatch,lmax,elab,lmin, thmin, thmax,thinc
 c
 c       namelist /system/ namep,massp,zp,jp,namet,masst,zt,jt
-c                 					
+c
 c       namelist /potential/ ptype,a1,a2,rc,uv,av,
 c                           rv,uw,aw,rw,vsov,rsov,asov,
 c                           vsow,rsow,asow,vd,avd,rvd,wd,awd,rwd
@@ -21,7 +21,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use gauss
       use precision
       implicit none
-      integer :: ie 
+      integer :: ie
 
 
       namelist /global/ hcm,rmatch,lmax,elab,lmin,nr,thmin, thmax,thinc
@@ -49,13 +49,13 @@ c /global/
        irmatch=nint(rmatch/hcm)
        rmax=rmatch
        nth = nint( (thmax-thmin) / thinc + 1)
-       ne=0 
+       ne=0
        allocate(rr(irmatch),rrw(irmatch))
        call simpson(irmatch,rmax,rr,rrw)
-       
-       do ie=1,99 
+
+       do ie=1,99
         if(elab(ie)>0) ne=ne+1
-       end do 
+       end do
 c-----------------------------------------------------------------------
 c/system/
        namep='null';massp=0.0d0;zp=0.0d0;jp=0.0d0
@@ -87,8 +87,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use pot
       use constants
       implicit none
-      
-     
+
+
       namelist /global/ hcm,rmatch,lmax,elab,lmin,nr,thmin, thmax,thinc
 
       namelist /system/ namep,massp,zp,namet,masst,zt
@@ -97,7 +97,7 @@ C
 C     namelist /potential/ ptype,a1,a2,rc,
 C    &                      uv,av,rv,uw,aw,rw,vsov,rsov,asov,
 C    &                      vsow,rsow,asow,vd,avd,rvd,wd,awd,rwd
-C    
+C
        write(1,nml=global)
 
        write(1,nml=system)
@@ -122,7 +122,7 @@ c***print reaction systems
       write(*,100) namep,massp,zp,jp
 100   format('Project=',A5,' MASS = ',F7.4,' Z = ',F5.1, ' Jp = ',f4.1)
 
-      write(*,110),namet,masst,zt,jt
+      write(*,110)namet,masst,zt,jt
 110   format('Target =',A5,' MASS = ',F7.4,' Z = ',F5.1, ' Jt = ',f4.1)
 
       write(*,150)

@@ -1,13 +1,13 @@
-OBJ= precision.o  constants.o systems.o channels.o mesh.o bgPN.o ch89.o kd02.o watson.o wlh.o gauss.o\
- pot.o input.o  coul90.o  interpolation.o  lagrange_mesh.o scattwf.o scattering.o 
+OBJ= precision.o  constants.o systems.o channels.o mesh.o bgPN.o ch89.o kd02.o watson.o  gauss.o\
+ pot.o input.o  coul90.o  interpolation.o  lagrange_mesh.o scattwf.o scattering.o
 
 
 # Laptop
  LIB =-L  /opt/local/lib -llapack
-#LIB = -L ../lapack-3.5.0 -lrefblas -llapack  
-FC = gfortran 
+#LIB = -L ../lapack-3.5.0 -lrefblas -llapack
+FC = gfortran
 F90 = gfortran
-FFLAGS = -O2 -Wtabs   -ffixed-line-length-0  
+FFLAGS = -O2 -Wtabs   -ffixed-line-length-0
 
 .SUFFIXES: .F90 .f90 .f95
 
@@ -33,7 +33,5 @@ scattering:  $(OBJ)
 	$(F90) $(FFLAGS) -c $<
 
 
-clean: 
+clean:
 	rm -f upot $(objectsbound) $(objectsscatt) *.mod core *.o icecream
-
-

@@ -27,11 +27,11 @@ c     subroutine to calculate the potential
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
        use mesh,only:irmatch,hcm
        use precision
-       use ch89mod 
-       use kd02mod 
+       use ch89mod
+       use kd02mod
        use bgPNmod
        use wssmod
-       use WLH_pot
+C       use WLH_pot
        use systems
        implicit none
        real*8 :: a13,r !a1^0.333333+a2^0.333333
@@ -51,7 +51,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       if (.not. allocated(v)) allocate(v(0:irmatch))
-      
+
       v=0.0d0
 c-----------------------------------------------------------------------
        a13=a1**(1./3.)+a2**(1./3.)
@@ -63,26 +63,26 @@ c       stop
 c-----------------------------------------------------------------------
        select case(ipot)
 
-!----------------KD02---------------------------------------------       
+!----------------KD02---------------------------------------------
        case(1)
-       
+
        if (z12>0.000001) then
           call kd02(2,zt,masst,elab(ie),uv,rv,av,uw,rw,aw,vd,rvd,avd,wd,rwd,awd,rc)  !! call subroutine from d.y. pang
        else
           call kd02(1,zt,masst,elab(ie),uv,rv,av,uw,rw,aw,vd,rvd,avd,wd,rwd,awd,rc)  !! call subroutine from d.y. pang
        end if
-!----------------ch89--------------------------------------------              
-       case(2)    
-       call ch89(massp,zp,masst,zt,elab(ie),uv,rv,av,uw,rw,aw,vd,rvd,avd,wd,rwd,awd,rc)
-!----------------Bechetti-Greenlees-------------------------------------------- 
+!----------------ch89--------------------------------------------
+       case(2)
+        call ch89(massp,zp,masst,zt,elab(ie),uv,rv,av,uw,rw,aw,vd,rvd,avd,wd,rwd,awd,rc)
+!----------------Bechetti-Greenlees--------------------------------------------
        case(3)
-       call bgPN(massp,zp,masst,zt,elab(ie),uv,rv,av,uw,rw,aw,vd,rvd,avd,wd,rwd,awd,rc)
-!----------------WSS-------------------------------------------- 
+         call bgPN(massp,zp,masst,zt,elab(ie),uv,rv,av,uw,rw,aw,vd,rvd,avd,wd,rwd,awd,rc)
+!----------------WSS--------------------------------------------
        case(4)
        call watson(massp,zp,masst,zt,elab(ie),uv,rv,av,uw,rw,aw,vd,rvd,avd,wd,rwd,awd,rc)
-       
-       end select 
-       
+
+       end select
+
 
 c      calculate the potential
        do ir=1,irmatch
@@ -95,23 +95,23 @@ c      calculate the potential
        wsv=-ws(r,uv,rv*a13,av)
        wsw=-ws(r,uw,rw*a13,aw)
        vc=cmplx(wsv,wsw,kind=8)
-       
+
        ! spin-orbit potential
 C      vlsv=wsso(r,vsov,rsov*a13,asov)*ls
 C      vlsw=wsso(r,vsow,rsow*a13,asow)*ls
 C      vls=cmplx(vlsv,vlsw,kind=8)
-       
+
        ! surface potential
        vsurv=4*avd*dws(r,vd,rvd*a13,avd)
        vsurw=4*awd*dws(r,wd,rwd*a13,awd)
        vsur=cmplx(vsurv,vsurw,kind=8)
-       
-       if(ipot==5) then 
-       xpn=1
-       if (zp>0.0000001) xpn=0
-       call WLHOP(xpn,elab(ie),zt,masst,r,vc,vsur)
-       
-       end if
+
+C       if(ipot==5) then
+C       xpn=1
+C       if (zp>0.0000001) xpn=0
+C       call WLHOP(xpn,elab(ie),zt,masst,r,vc,vsur)
+C
+C       end if
        ! Coulomb potential
        vcou=vcoul(r,z12,rc*a13)
 
@@ -232,23 +232,23 @@ c *** WS derivative
          return
       end function
 c-----------------------------------------------------------------------
-c** Malfliet-Tjon potential 
+c** Malfliet-Tjon potential
 
        function MT(r)
-       implicit none 
-       real*8 :: r 
+       implicit none
+       real*8 :: r
        real*8 :: VA, VR, muA, muR
        complex*16 :: MT
-       
+
        VA= 626.8932
        VR= 1438.7228
        muA=1.550
        muR=3.11
-       
-       
+
+
        MT= dcmplx(VR*exp(-muR*r)/r - VA*exp(-muA*r)/r,0.0)
-       
-       
+
+
        end function
 
 c-----------------------------------------------------------------------
